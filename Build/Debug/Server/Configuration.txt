@@ -1,0 +1,4 @@
+MaxPendingConnections = 15
+EnabledLogin = true
+Port = 7200
+Sleep = 1
