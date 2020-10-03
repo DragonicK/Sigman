@@ -98,6 +98,7 @@
             this.TextPassword.PasswordChar = '*';
             this.TextPassword.Size = new System.Drawing.Size(268, 26);
             this.TextPassword.TabIndex = 3;
+            this.TextPassword.Text = "guest";
             // 
             // TextLogin
             // 
@@ -106,6 +107,7 @@
             this.TextLogin.Name = "TextLogin";
             this.TextLogin.Size = new System.Drawing.Size(268, 26);
             this.TextLogin.TabIndex = 2;
+            this.TextLogin.Text = "guest";
             // 
             // ButtonQuit
             // 
@@ -129,7 +131,6 @@
             // 
             // TimerHandShake
             // 
-            this.TimerHandShake.Enabled = true;
             this.TimerHandShake.Interval = 1000;
             this.TimerHandShake.Tick += new System.EventHandler(this.TimerHandShake_Tick);
             // 

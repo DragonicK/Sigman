@@ -4,10 +4,10 @@ using Sigman.Core.Common;
 using Sigman.Core.Network;
 using Sigman.Core.Configuration;
 using Sigman.Client.Configuration;
+using Sigman.Client.Communication;
 
 namespace Sigman.Client {
     static class Program {
-        static FormLogin frmMain;
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
@@ -20,11 +20,8 @@ namespace Sigman.Client {
                 return;
             }
 
-            frmMain = new FormLogin();
-            frmMain.Show();
-            frmMain.InitializeClient();
-
-            Application.Run(frmMain);
+            Global.Initialize();  
+            Application.Run(Global.Forms.Login);
         }
 
         static bool ReadConfiguration() {

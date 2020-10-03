@@ -1,98 +1,87 @@
-﻿using Sigman.Client.Communication;
-using Sigman.Client.Network;
-using System;
+﻿using System;
 using System.Windows.Forms;
-using System.Threading;
-using Sigman.Client.Client;
 using System.Drawing;
-using Sigman.Client.Network.Packet;
-using System.Collections.Generic;
+using Sigman.Client.Controller;
 
 namespace Sigman.Client {
     public partial class FormLogin : Form {
-        Thread t;
-        bool ClientRunning = true;
 
-        CpPing ping;
-        int pingTick;
-        const int PingTime = 3000;
+        private const int ConnectionTimeOut = 8;
+        private IClientTcp Socket { get; set; }
+        private IPacket Packet { get; set; }
 
-        public FormLogin() {
+        private int SecondCount = 0;
+        private bool SendingLogin = false;
+
+        public FormLogin(IClientTcp socket, IPacket packet) {
             InitializeComponent();
+            Socket = socket;
+            Packet = packet;
         }
 
         private void ButtonLogin_Click(object sender, EventArgs e) {
-            LabelStatus.Text = "Status: Waiting for connection handshake ...";
+            if (CheckConnectionResult(Socket.Connect())) {
+                LabelStatus.Text = "Status: Connecting ...";
+                LabelStatus.ForeColor = Color.ForestGreen;
 
-            var login = new Login();
-            login.ProcessConnection();
+                SecondCount = 0;
+
+              //  ChangeControlActivity(false);
+
+                Socket.SendRSAKey();
+
+                TimerHandShake.Start();
+            }
         }
 
         private void ButtonQuit_Click(object sender, EventArgs e) {
-            ClientRunning = false;
+            Socket.Stop();
+            Environment.Exit(0);
         }
-
-        #region Client
-
-        public void InitializeClient() {
-            ClientRunning = true;
-            OperationCode.Initialize();
-
-            ping = new CpPing();
-
-            t = new Thread(ClientLoop);
-            t.Start();
-        }
-
-        private void ClientLoop() {
-            pingTick = Environment.TickCount;
-
-            while (ClientRunning) {
-                if (Global.Connection != null) {
-                    Global.Connection.ReceiveData();
-
-                    // Send ping to check if connection is alive.
-                    if (Environment.TickCount >= pingTick + PingTime) {
-                        ping.Send(Global.Connection);
-                        pingTick = Environment.TickCount;
-                    }
-                }
-
-                Thread.Sleep(1);
-            }
-
-            if (Global.Connection != null) {
-                Global.Connection.Disconnect();
-            }
-
-            Application.Exit();
-        }
-
-        #endregion
 
         private void FormLogin_FormClosing(object sender, FormClosingEventArgs e) {
             e.Cancel = true;
-            ClientRunning = false;
+
+            Socket.Stop();
+
             e.Cancel = false;
         }
 
         private void FormLogin_Load(object sender, EventArgs e) {
+            ChangeControlActivity(true);
             TimerHandShake.Start();
         }
 
         private void TimerHandShake_Tick(object sender, EventArgs e) {
-            if (Global.Connection != null) {
-                if (Global.Connection.Connected) {
-                    if (Global.HandShakeOk) {
-                        LabelStatus.Text = "Status: Connected ...";
-                        LabelStatus.ForeColor = Color.ForestGreen;
-                    }
-                }
-                else {
-                    LabelStatus.Text = "Status: Disconnected ...";
-                    LabelStatus.ForeColor = Color.ForestGreen;
-                }
+            if (Socket.IsConnected() && Socket.IsHandShakeOk()) {
+                Packet.SendLogin(TextLogin.Text.Trim(), TextPassword.Text.Trim());
+
+                TimerHandShake.Stop();
             }
+        }
+
+        private bool CheckConnectionResult(ConnectionResult result) {
+            if (result == ConnectionResult.InvalidIpAddress) {
+                MessageBox.Show("Endereço ip inválido.", "Aviso");
+                return false;
+            }
+            else if (result == ConnectionResult.InvalidPort) {
+                MessageBox.Show("Número de porta inválido.", "Aviso");
+                return false;
+            }
+            else if (result == ConnectionResult.Disconnected) {
+                MessageBox.Show("Não foi possível a conexão.", "Aviso");
+                return false;
+            }
+
+            return true;
+        }
+
+        private void ChangeControlActivity(bool enabled) {
+            TextLogin.Enabled = enabled;
+            TextPassword.Enabled = enabled;
+            ButtonLogin.Enabled = enabled;
+            ButtonRegister.Enabled = enabled;
         }
     }
 }

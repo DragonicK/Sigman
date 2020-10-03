@@ -82,7 +82,7 @@ namespace Sigman.Core.Network {
                     return;
                 }
 
-                msg.Write(buffer);
+                msg.WriteReceivedBytes(buffer, packetSize);
                 Array.Clear(buffer, 0, packetSize);
 
                 int pLength = 0;

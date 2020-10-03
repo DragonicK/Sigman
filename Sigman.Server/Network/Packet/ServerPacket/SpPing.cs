@@ -4,6 +4,7 @@ namespace Sigman.Server.Network.Packet {
     public class SpPing : SendPacket {
         public SpPing() {
             msg.Write((int)OperationCode.SendPacket[GetType()]);
+            msg.Write((byte)1);
         }
     }
 }

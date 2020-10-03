@@ -29,8 +29,11 @@ namespace Sigman.Core.Network {
             var msg = new ByteBuffer(buffer);
             var key = rsaKey.GetClientPublicKey();
 
-            key.Exponent = msg.ReadBytes();
-            key.Modulus = msg.ReadBytes();
+            var length = msg.ReadInt32();
+            key.Exponent = msg.ReadBytes(length);
+
+            length = msg.ReadInt32();
+            key.Modulus = msg.ReadBytes(length);
 
             rsaKey.SetClientPublicKey(key);
         }

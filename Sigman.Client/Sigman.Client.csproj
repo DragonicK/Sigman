@@ -46,9 +46,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Client\Login.cs" />
     <Compile Include="Communication\Global.cs" />
     <Compile Include="Configuration\ClientConfiguration.cs" />
+    <Compile Include="Controller\Socket\ClientTcp.cs" />
+    <Compile Include="Controller\Socket\ConnectionResult.cs" />
+    <Compile Include="Controller\Forms\Forms.cs" />
+    <Compile Include="Controller\Socket\IPacket.cs" />
+    <Compile Include="Controller\Socket\IClientTcp.cs" />
+    <Compile Include="Controller\Socket\Packet.cs" />
     <Compile Include="FormLogin.cs">
       <SubType>Form</SubType>
     </Compile>

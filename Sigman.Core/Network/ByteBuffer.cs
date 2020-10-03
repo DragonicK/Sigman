@@ -5,7 +5,8 @@ using System.Text;
 namespace Sigman.Core.Network {
     public sealed class ByteBuffer {
         readonly MemoryStream buffer;
-        int readposition = 0;
+        int readPos = 0;
+        int receivedWritePos = 0;
 
         private const int ByteLength = 1;
         private const int Int16Length = 2;
@@ -13,7 +14,7 @@ namespace Sigman.Core.Network {
         private const int Int64Length = 8;
 
         public ByteBuffer() {
-            buffer = new MemoryStream(byte.MaxValue);
+            buffer = new MemoryStream(byte.MaxValue + 1);
         }
 
         public ByteBuffer(int capacity) {
@@ -33,31 +34,43 @@ namespace Sigman.Core.Network {
         }
 
         public int Length() {
-            return (int)(buffer.Length - readposition);
+            return (int)(buffer.Length - readPos);
         }
 
         public void Flush() {
             buffer.Flush();
             buffer.SetLength(0);
             buffer.Position = 0;
-            readposition = 0;
+            readPos = 0;
+            receivedWritePos = 0;
         }
 
         public void Trim() {
-            if (readposition >= buffer.Length) {
+            if (readPos >= buffer.Length) {
                 Flush();
             }
         }
 
         public void Write(byte[] values) {
-            CheckCapacity(values.Length);
-
             buffer.Write(values, 0, values.Length);
         }
 
-        public void Write(byte value) {
-            CheckCapacity(ByteLength);
+        /// <summary>
+        /// Escreve no pacote os dados recebidos pela conexão.
+        /// </summary>
+        /// <param name="values"></param>
+        /// <param name="size"></param>
+        public void WriteReceivedBytes(byte[] values, int size) {
+            if (buffer.Length + size > buffer.Capacity) {
+                buffer.Capacity = (int)(buffer.Length + size);
+            }
 
+            buffer.Position = receivedWritePos;
+            buffer.Write(values, 0, size);
+            receivedWritePos += size;
+        }
+
+        public void Write(byte value) {
             var values = new byte[ByteLength];
             values[0] = value;
 
@@ -65,62 +78,42 @@ namespace Sigman.Core.Network {
         }
 
         public void Write(short value) {
-            CheckCapacity(Int16Length);
-
             buffer.Write(BitConverter.GetBytes(value), 0, Int16Length);
         }
 
         public void Write(int value) {
-            CheckCapacity(Int32Length);
-
             buffer.Write(BitConverter.GetBytes(value), 0, Int32Length);
         }
 
         public void Write(long value) {
-            CheckCapacity(Int64Length);
-
             buffer.Write(BitConverter.GetBytes(value), 0, Int64Length);
         }
 
         public void Write(string value) {
-            var values = Encoding.UTF32.GetBytes(value);
+            var values = Encoding.Unicode.GetBytes(value);
 
-            Write(value.Length);
+            Write(values.Length);
             Write(values);
         }
 
         public byte[] ReadBytes(int length, bool peek = true) {
             var values = new byte[length];
 
-            buffer.Position = readposition;
+            buffer.Position = readPos;
             buffer.Read(values, 0, length);
 
             if (peek) {
-                readposition += length;
-            }
-
-            return values;
-        }
-
-        public byte[] ReadBytes(bool peek = true) {
-            int length = ReadInt32();
-            var values = new byte[length];
-
-            buffer.Position = readposition;
-            buffer.Read(values, 0, length);
-
-            if (peek) {
-                readposition += length;
+                readPos += length;
             }
 
             return values;
         }
 
         public byte ReadByte(bool peek = true) {
-            buffer.Position = readposition;
+            buffer.Position = readPos;
 
             if (peek) {
-                readposition += ByteLength;
+                readPos += ByteLength;
             }
 
             return (byte)buffer.ReadByte();
@@ -129,11 +122,11 @@ namespace Sigman.Core.Network {
         public short ReadInt16(bool peek = true) {
             var values = new byte[Int16Length];
 
-            buffer.Position = readposition;
+            buffer.Position = readPos;
             buffer.Read(values, 0, Int16Length);
 
             if (peek) {
-                readposition += Int16Length;
+                readPos += Int16Length;
             }
 
             return BitConverter.ToInt16(values, 0);
@@ -142,38 +135,23 @@ namespace Sigman.Core.Network {
         public int ReadInt32(bool peek = true) {
             var values = new byte[Int32Length];
 
-            buffer.Position = readposition;
+            buffer.Position = readPos;
             buffer.Read(values, 0, Int32Length);
 
             if (peek) {
-                readposition += Int32Length;
+                readPos += Int32Length;
             }
 
             return BitConverter.ToInt32(values, 0);
         }
 
-        public string ReadString(bool peek = true) {
+        public string ReadString() {
             try {
                 var length = ReadInt32();
-
-                buffer.Position = readposition;
-
-                var value = Encoding.UTF32.GetString(buffer.ToArray(), readposition, length);
-
-                if (peek) {
-                    readposition += length;
-                }
-
-                return value;
+                return Encoding.Unicode.GetString(ReadBytes(length)); 
             }
             catch {
                 return string.Empty;
-            }
-        }
-
-        private void CheckCapacity(int size) {
-            if (buffer.Length + size > buffer.Capacity) {
-                buffer.Capacity = (int)(buffer.Length + size);
             }
         }
     }

@@ -7,11 +7,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Sigman.Client.Controller;
 
 namespace Sigman.Client {
     public partial class FormRegister : Form {
-        public FormRegister() {
+        private IClientTcp Socket { get; set; }
+        private IPacket Packet { get; set; }
+
+        public FormRegister(IClientTcp socket, IPacket packet) {
             InitializeComponent();
+            Socket = socket;
+            Packet = packet;
         }
     }
 }
