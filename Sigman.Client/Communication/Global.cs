@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading.Tasks;
 using Sigman.Client.Controller;
@@ -14,6 +15,8 @@ namespace Sigman.Client.Communication {
         public static ClientTcp Socket { get; set; }
         public static Packet Packet { get; set; }
         public static Forms Forms { get; set; }
+
+        public static bool Running = false;
 
         public static void Initialize() {
             OperationCode.Initialize();

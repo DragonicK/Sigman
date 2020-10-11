@@ -13,6 +13,21 @@ namespace Sigman.Client {
         private int SecondCount = 0;
         private bool SendingLogin = false;
 
+        private bool Invoked { get; set; }
+
+        private delegate void CloseForm();
+
+        public void CanCloseForm() {
+            if (InvokeRequired) {
+                Invoked = true;
+                var d = new CloseForm(CanCloseForm);
+                Invoke(d);
+            }
+            else {
+                Close();
+            }
+        }
+             
         public FormLogin(IClientTcp socket, IPacket packet) {
             InitializeComponent();
             Socket = socket;
@@ -26,7 +41,7 @@ namespace Sigman.Client {
 
                 SecondCount = 0;
 
-              //  ChangeControlActivity(false);
+                ChangeControlActivity(false);
 
                 Socket.SendRSAKey();
 
@@ -42,8 +57,10 @@ namespace Sigman.Client {
         private void FormLogin_FormClosing(object sender, FormClosingEventArgs e) {
             e.Cancel = true;
 
-            Socket.Stop();
-
+            if (!Invoked) {
+                Socket.Stop();
+            }
+            
             e.Cancel = false;
         }
 

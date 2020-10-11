@@ -9,7 +9,7 @@ namespace Sigman.Server.Network.Packet {
             // Envia a chave publica da conexão para o cliente.
             var key = connection.RSAKey.GetMyPublicKey();
             var msg = new SpRSAKey(key);
-            msg.Send(connection);
+            msg.Send(connection, false);
         }
     }
 }

@@ -18,7 +18,8 @@ namespace Sigman.Server.Network {
 
             SendPacket = new Dictionary<Type, ServerPacket>() {
                 { typeof(SpPing), ServerPacket.Ping },
-                { typeof(SpRSAKey), ServerPacket.RSAKey }
+                { typeof(SpRSAKey), ServerPacket.RSAKey },
+                { typeof(SpAuthenticationResult), ServerPacket.AuthResult }
             };
         }
 

@@ -1,18 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Sigman.Core.Network;
+﻿using Sigman.Core.Network;
+using Sigman.Core.Cryptography.RSA;
+using Sigman.Server.Server;
 
 namespace Sigman.Server.Network.Packet {
     public class CpLogin : IRecvPacket {
         public void Process(byte[] buffer, Connection connection) {
-            var msg = new ByteBuffer(buffer);
-            var username = msg.ReadString();
-            var password = msg.ReadString();
+            var keys = connection.RSAKey.GetKey();
+            var bytes = RSACryptography.RSADecrypt(buffer, keys.GetPrivateKey(), false);
 
-            System.Windows.Forms.MessageBox.Show(username + " " + password);
+            if (bytes != null) {
+                var msg = new ByteBuffer(bytes);
+                var username = msg.ReadString();
+                var password = msg.ReadString();
+
+                var result = Authentication.Authenticate(username, password);
+
+                var packet = new SpAuthenticationResult(result);
+                packet.Send(connection, true);
+            }
+            else {
+                connection.Disconnect();
+            }
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Sigman.Core.Network;
+using Sigman.Server.Communication;
 using Sigman.Server.Network;
 using Sigman.Server.Network.Packet;
 
@@ -42,7 +43,7 @@ namespace Sigman.Server.Server {
                 if (Environment.TickCount >= pingTick + PingTime) {
                     pingTick = Environment.TickCount;
 
-                    ping.Send(list[i]);
+                    ping.Send(list[i], false);
                 }
 
                 if (!list[i].Connected) {
@@ -54,6 +55,7 @@ namespace Sigman.Server.Server {
             if (Disconnected.Count > 0) {
                 for (var i = 0; i < Disconnected.Count; i++) {
                     Authentication.Remove(Disconnected[i]);
+                    Global.WriteLog($"Connection Removed {Disconnected[i].IpAddress.Ip}", "Black");
                 }
 
                 Disconnected.Clear();

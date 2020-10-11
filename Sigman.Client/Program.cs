@@ -22,6 +22,7 @@ namespace Sigman.Client {
 
             Global.Initialize();  
             Application.Run(Global.Forms.Login);
+            Application.Run(Global.Forms.Main);
         }
 
         static bool ReadConfiguration() {

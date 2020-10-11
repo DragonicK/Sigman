@@ -12,7 +12,8 @@ namespace Sigman.Client.Network {
         public static void Initialize() {
             RecvPacket = new Dictionary<ServerPacket, Type> {
                  { ServerPacket.Ping, typeof(SpPing) },
-                 { ServerPacket.RSAKey, typeof(SpRSAKey) }
+                 { ServerPacket.RSAKey, typeof(SpRSAKey) },
+                 { ServerPacket.AuthResult, typeof(SpAuthenticationResult) }
             };
 
             SendPacket = new Dictionary<Type, ClientPacket>() {

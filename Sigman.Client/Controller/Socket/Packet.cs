@@ -13,7 +13,7 @@ namespace Sigman.Client.Controller.Socket {
             }
 
             var login = new CpLogin(username, password);
-            login.Send(Global.Socket.Connection);
+            login.Send(Global.Socket.Connection, true);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Sigman.Core.Network;
 using Sigman.Server.Communication;
+using Sigman.Server.Configuration;
 
 namespace Sigman.Server.Server {
     public static class Authentication {
@@ -18,8 +19,8 @@ namespace Sigman.Server.Server {
             Connections.Remove(connection);
         }
 
-        public static void OnDisconnect(int index) {
-            Global.WriteLog($"Disconnected", "Green");
+        public static void OnDisconnect(int index, string ipAddress) {
+            Global.WriteLog($"Disconnected {ipAddress}", "Green");
         }
 
         public static void Clear() {
@@ -28,6 +29,14 @@ namespace Sigman.Server.Server {
             }
 
             Connections.Clear();
+        }
+
+        public static AuthenticationResult Authenticate(string username, string password) {
+            if (!ServerConfiguration.EnabledLogin) {
+                return AuthenticationResult.Sucess;
+            }
+
+            return AuthenticationResult.Sucess;
         }
     }
 }

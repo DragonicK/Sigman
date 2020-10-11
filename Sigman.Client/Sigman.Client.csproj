@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Client\AuthenticationResult.cs" />
     <Compile Include="Communication\Global.cs" />
     <Compile Include="Configuration\ClientConfiguration.cs" />
     <Compile Include="Controller\Socket\ClientTcp.cs" />
@@ -60,6 +61,12 @@
     <Compile Include="FormLogin.Designer.cs">
       <DependentUpon>FormLogin.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormMain.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormMain.Designer.cs">
+      <DependentUpon>FormMain.cs</DependentUpon>
+    </Compile>
     <Compile Include="FormRegister.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -70,12 +77,20 @@
     <Compile Include="Network\Packet\ClientPacket\CpLogin.cs" />
     <Compile Include="Network\Packet\ClientPacket\CpPing.cs" />
     <Compile Include="Network\Packet\ClientPacket\CpRSAKey.cs" />
+    <Compile Include="Network\Packet\ClientPacket\CpSendFile.cs" />
+    <Compile Include="Network\Packet\ServerPacket\SpAuthenticationResult.cs" />
     <Compile Include="Network\Packet\ServerPacket\SpPing.cs" />
     <Compile Include="Network\Packet\ServerPacket\SpRSAKey.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="FormLogin.resx">
       <DependentUpon>FormLogin.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormMain.resx">
+      <DependentUpon>FormMain.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormRegister.resx">
+      <DependentUpon>FormRegister.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

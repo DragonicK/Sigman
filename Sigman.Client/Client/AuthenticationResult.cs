@@ -1,4 +1,4 @@
-﻿namespace Sigman.Server.Server {
+﻿namespace Sigman.Client.Client {
     public enum AuthenticationResult {
         WrongUsername,
         WrongPassword,

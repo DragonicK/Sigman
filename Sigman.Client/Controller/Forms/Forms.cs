@@ -4,10 +4,12 @@ namespace Sigman.Client.Controller {
     public class Forms {
         public FormLogin Login { get; set; }
         public FormRegister Register { get; set; }
+        public FormMain Main { get; set; }
 
         public Forms(IClientTcp socket, IPacket packet) {
             Login = new FormLogin(socket, packet);
             Register = new FormRegister(socket, packet);
+            Main = new FormMain(socket, packet);
         }
 
         public void ShowLogin() {

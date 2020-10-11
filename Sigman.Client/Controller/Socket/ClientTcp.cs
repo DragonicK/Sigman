@@ -59,7 +59,7 @@ namespace Sigman.Client.Controller {
             return CreateConnection() ? ConnectionResult.Connected : ConnectionResult.Disconnected;
         }
 
-        public void OnDisconnect(int index) {
+        public void OnDisconnect(int index, string ipAddress) {
             HandShake = false;
         }
 
@@ -69,7 +69,7 @@ namespace Sigman.Client.Controller {
                     var key = Connection.RSAKey.GetMyPublicKey();
                     var msg = new CpRSAKey(key);
 
-                    msg.Send(Connection);
+                    msg.Send(Connection, false);
                 }
             }
         }
@@ -113,7 +113,7 @@ namespace Sigman.Client.Controller {
         private void SendPing() {
             if (Connection.Connected) {
                 if (Environment.TickCount >= pingTick + PingTime) {
-                    ping.Send(Connection);
+                    ping.Send(Connection, false);
                     pingTick = Environment.TickCount;
                 }
             }

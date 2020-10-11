@@ -60,6 +60,7 @@
     <Compile Include="Network\Packet\ClientPacket\CpLogin.cs" />
     <Compile Include="Network\Packet\ClientPacket\CpPing.cs" />
     <Compile Include="Network\Packet\ClientPacket\CpRSAKey.cs" />
+    <Compile Include="Network\Packet\ServerPacket\SpAuthenticationResult.cs" />
     <Compile Include="Network\Packet\ServerPacket\SpPing.cs" />
     <Compile Include="Network\Packet\ServerPacket\SpRSAKey.cs" />
     <Compile Include="Network\TcpServer.cs" />

@@ -45,6 +45,8 @@ namespace Sigman.Server {
             }
 
             Server.Stop();
+
+            Application.Exit();
         }
 
         #endregion
