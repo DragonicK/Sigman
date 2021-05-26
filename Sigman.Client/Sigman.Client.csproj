@@ -74,10 +74,13 @@
       <DependentUpon>FormRegister.cs</DependentUpon>
     </Compile>
     <Compile Include="Network\OperationCode.cs" />
+    <Compile Include="Network\Packet\ClientPacket\CpAESKey.cs" />
+    <Compile Include="Network\Packet\ClientPacket\CpFile.cs" />
     <Compile Include="Network\Packet\ClientPacket\CpLogin.cs" />
     <Compile Include="Network\Packet\ClientPacket\CpPing.cs" />
     <Compile Include="Network\Packet\ClientPacket\CpRSAKey.cs" />
     <Compile Include="Network\Packet\ClientPacket\CpSendFile.cs" />
+    <Compile Include="Network\Packet\ServerPacket\SpAESKey.cs" />
     <Compile Include="Network\Packet\ServerPacket\SpAuthenticationResult.cs" />
     <Compile Include="Network\Packet\ServerPacket\SpPing.cs" />
     <Compile Include="Network\Packet\ServerPacket\SpRSAKey.cs" />

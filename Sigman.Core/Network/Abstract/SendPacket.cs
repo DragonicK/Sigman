@@ -1,4 +1,4 @@
-﻿using Sigman.Core.Cryptography.RSA;
+﻿using Sigman.Core.Cryptography.Aes;
 
 namespace Sigman.Core.Network {
     public abstract class SendPacket {
@@ -24,7 +24,7 @@ namespace Sigman.Core.Network {
                     connection.Send(msg);
                 }
                 else {
-                    msg = Cryptography(connection);
+                    msg = Encript(connection);
 
                     if (msg.Length() <= 0) {
                         connection.Disconnect();
@@ -36,19 +36,27 @@ namespace Sigman.Core.Network {
             }  
         }
 
-        private ByteBuffer Cryptography(Connection connection) {
+        private ByteBuffer Encript(Connection connection) {
             encrypted = true;
 
             var buffer = new ByteBuffer();
             var header = msg.ReadInt32();
             var bytes = msg.ReadBytes(msg.Length());
-            var keys = connection.RSAKey.GetKey();
-            var encryptedBytes = RSACryptography.RSAEncrypt(bytes, keys.GetClientPublicKey(), false);
+            var key = connection.AesKey.GetKey();
+            var iv = connection.AesKey.GetIv();
 
-            if (encryptedBytes != null) {
-                buffer = new ByteBuffer(4 + encryptedBytes.Length);
+            var aes = new AesCryptography() {
+                CipherMode = System.Security.Cryptography.CipherMode.CBC,
+                KeySize = AesKeySize.KeySize128,
+                PaddingMode = System.Security.Cryptography.PaddingMode.PKCS7
+            };
+
+            var encripted = aes.Encrypt(bytes, key, iv);
+
+            if (encripted != null) {
+                buffer = new ByteBuffer(4 + encripted.Length);
                 buffer.Write(header);
-                buffer.Write(encryptedBytes);
+                buffer.Write(encripted);
             }
 
             return buffer;

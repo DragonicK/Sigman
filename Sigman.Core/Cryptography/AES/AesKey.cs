@@ -1,23 +1,10 @@
 ﻿namespace Sigman.Core.Cryptography.Aes {
     public sealed class AesKey {
-        private readonly byte[] defaultKey;
-        private readonly byte[] defaultIv;
-
         private byte[] key;
         private byte[] iv;
 
-        public AesKey() {
-            defaultKey = new byte[AesKeyLength.Key];
-            defaultIv = new byte[AesKeyLength.Iv];
-
-            for (var i = 0; i < AesKeyLength.Key; i++) {
-                defaultKey[i] = (byte)i;
-            }
-
-            for (var i = 0; i < AesKeyLength.Iv; i++) {
-                defaultIv[i] = (byte)i;
-            }
-        }
+        private byte[] clientKey;
+        private byte[] clientIv;
 
         public bool IsKeyCreated() {
             if (key != null && iv != null) {
@@ -35,12 +22,20 @@
             return iv;
         }
 
-        public byte[] GetDefaultKey() {
-            return defaultKey;
+        public void SetClientKey(byte[] key) {
+            clientKey = key;
         }
 
-        public byte[] GetDefaultIv() {
-            return defaultIv;
+        public void SetClientIv(byte[] iv) {
+            clientIv = iv;
+        }
+
+        public byte[] GetClientKey() {
+            return clientKey;
+        }
+
+        public byte[] GetClientIv() {
+            return clientIv;
         }
 
         public bool CreateKey(string password) {

@@ -145,6 +145,20 @@ namespace Sigman.Core.Network {
             return BitConverter.ToInt32(values, 0);
         }
 
+        public long ReadInt64(bool peek = true) {
+            var values = new byte[Int64Length];
+
+            buffer.Position = readPos;
+            buffer.Read(values, 0, Int64Length);
+
+            if (peek) {
+                readPos += Int64Length;
+            }
+
+            return BitConverter.ToInt64(values, 0);
+
+        }
+
         public string ReadString() {
             try {
                 var length = ReadInt32();

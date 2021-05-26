@@ -1,15 +1,20 @@
 ﻿using System;
+using System.IO;
 using System.Diagnostics;
+using System.Threading;
 using System.Windows.Forms;
+using System.Threading.Tasks;
 using Sigman.Client.Controller;
 
 namespace Sigman.Client {
     public partial class FormMain : Form {
+        private const int ChunckSize = 1024;
+        private delegate void ProgressChanged(int progress); 
         private IClientTcp Socket { get; set; }
         private IPacket Packet { get; set; }
-
         private bool Started { get; set; }
-
+        private long BytesReadCount { get; set; }
+        private long FileLength { get; set; }
         private string FileName { get; set; } = string.Empty;
         private string InputFile { get; set; } = string.Empty;
         private string OutputFolder { get; set; } = string.Empty;
@@ -24,7 +29,7 @@ namespace Sigman.Client {
             var dialog = new OpenFileDialog() {
                 Multiselect = false,
                 CheckFileExists = true,
-                Filter = "All Files|*.*",
+                Filter = "Executable Files | *.exe",
                 InitialDirectory = Environment.CurrentDirectory
             };
 
@@ -66,6 +71,10 @@ namespace Sigman.Client {
             ButtonFile.Enabled = false;
             TextOutputFolder.Enabled = false;
             ButtonFolder.Enabled = false;
+
+            var t = Task.Run(() => {
+                StartProcess();
+            });
         }
 
         private void ButtonCancel_Click(object sender, EventArgs e) {
@@ -114,7 +123,42 @@ namespace Sigman.Client {
         }
 
         private void StartProcess() {
+            BytesReadCount = 0;
 
+            using (var f = new FileStream(InputFile, FileMode.Open, FileAccess.Read)) {
+                using (var r = new BinaryReader(f)) {
+
+                    FileLength = f.Length;
+
+                    while (Started) {
+                        var buffer = r.ReadBytes(ChunckSize);
+
+                        BytesReadCount += buffer.Length;
+
+                        Packet.SendFile(FileName, FileLength, buffer);
+
+                        if (BytesReadCount >= FileLength) {
+                            Started = false;
+                        }
+              
+                        UpgradeProgressBar(Convert.ToInt32((BytesReadCount / (double)FileLength) * 100f));
+                    }
+                }
+            }
+        }
+
+        private void UpgradeProgressBar(int progress) {
+            if (progress > 100) {
+                progress = 100;
+            }
+
+            if (ProgressSend.InvokeRequired) {
+                var d = new ProgressChanged(UpgradeProgressBar);
+                ProgressSend.Invoke(d, new object[] { progress });
+            }
+            else {
+                ProgressSend.Value = progress;
+            }
         }
     }
 }

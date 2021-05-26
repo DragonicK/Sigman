@@ -6,6 +6,7 @@ using Sigman.Server.Configuration;
 namespace Sigman.Server.Server {
     public static class Authentication {
         public static List<Connection> Connections { get; set; } = new List<Connection>();
+        public static Dictionary<string, FileHandler> FileHandler { get; set; } = new Dictionary<string, FileHandler>();
 
         public static void Add(Connection connection) {
             connection.OnDisconnect += OnDisconnect;

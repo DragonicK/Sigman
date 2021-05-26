@@ -42,7 +42,6 @@ namespace Sigman.Server.Server {
 
                 if (Environment.TickCount >= pingTick + PingTime) {
                     pingTick = Environment.TickCount;
-
                     ping.Send(list[i], false);
                 }
 

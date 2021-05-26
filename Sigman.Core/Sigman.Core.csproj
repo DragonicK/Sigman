@@ -49,6 +49,7 @@
     <Compile Include="Cryptography\AES\AesKeySize.cs" />
     <Compile Include="Cryptography\AES\AesKeyType.cs" />
     <Compile Include="Cryptography\Hash.cs" />
+    <Compile Include="Cryptography\KeyGenerator.cs" />
     <Compile Include="Cryptography\RSA\RSACryptography.cs" />
     <Compile Include="Cryptography\RSA\RSAKey.cs" />
     <Compile Include="Network\Abstract\SendPacket.cs" />

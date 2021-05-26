@@ -13,12 +13,15 @@ namespace Sigman.Server.Network {
             RecvPacket = new Dictionary<ClientPacket, Type> {
                  { ClientPacket.Ping, typeof(CpPing) },
                  { ClientPacket.RSAKey, typeof(CpRSAKey) },
-                 { ClientPacket.AuthLogin, typeof(CpLogin) }
+                 { ClientPacket.AESKey, typeof(CpAESKey) } ,
+                 { ClientPacket.AuthLogin, typeof(CpLogin) },
+                 { ClientPacket.File, typeof(CpFile) }
             };
 
             SendPacket = new Dictionary<Type, ServerPacket>() {
                 { typeof(SpPing), ServerPacket.Ping },
                 { typeof(SpRSAKey), ServerPacket.RSAKey },
+                { typeof(SpAESKey), ServerPacket.AESKey },
                 { typeof(SpAuthenticationResult), ServerPacket.AuthResult }
             };
         }

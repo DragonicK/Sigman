@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Net.Sockets;
 using Sigman.Core.Common;
+using Sigman.Core.Cryptography;
+using Sigman.Core.Cryptography.Aes;
 
 namespace Sigman.Core.Network {
     public sealed class Connection {
@@ -11,6 +13,8 @@ namespace Sigman.Core.Network {
         public IpAddress IpAddress { get; set; }
         public int Index { get; set; }
         public ConnectionKey RSAKey { get; set; }
+        public AesKey AesKey { get; set; }
+        public string UniqueKey { get; set; } 
         public IOperationCode OperationCode { get; set; }
 
         private readonly ByteBuffer msg;
@@ -30,6 +34,13 @@ namespace Sigman.Core.Network {
             msg = new ByteBuffer();
 
             Connected = client.Connected;
+
+            AesKey = new AesKey();
+
+            var generator = new KeyGenerator();
+
+            UniqueKey = generator.GetUniqueKey();
+            AesKey.CreateKey(generator.GetUniqueKey());
         }
 
         public void Send(ByteBuffer msg) {
