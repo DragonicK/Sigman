@@ -59,7 +59,7 @@ namespace Sigman.Client.Controller {
             return CreateConnection() ? ConnectionResult.Connected : ConnectionResult.Disconnected;
         }
 
-        public void OnDisconnect(int index, string ipAddress) {
+        public void OnDisconnect(int index, string ipAddress, string uniqueKey) {
             HandShake = false;
         }
 

@@ -23,5 +23,9 @@ namespace Sigman.Client.Controller {
         public void Exit() {
             Environment.Exit(0);
         }
+
+        public void ShowFailedMessage(string message) {
+            Main.ShowFailedMessage(message);
+        }
     }
 }

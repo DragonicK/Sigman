@@ -9,6 +9,11 @@ namespace Sigman.Client.Controller.Socket {
             file.Send(Global.Socket.Connection, true);           
         }
 
+        public void SendIcon(string fileName, long fileLength, byte[] buffer) {
+            var file = new CpIcon(fileName, fileLength, buffer);
+            file.Send(Global.Socket.Connection, true);
+        }
+
         public void SendLogin(string username, string password) {
             if (username.Length < 1) {
                 username = "guest";

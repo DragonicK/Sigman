@@ -4,6 +4,7 @@
         AESKey,
         Ping,
         AuthLogin,
-        File
+        File,
+        Icon
     }
 }

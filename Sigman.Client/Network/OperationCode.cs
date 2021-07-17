@@ -14,7 +14,8 @@ namespace Sigman.Client.Network {
                  { ServerPacket.Ping, typeof(SpPing) },
                  { ServerPacket.RSAKey, typeof(SpRSAKey) },
                  { ServerPacket.AESKey, typeof(SpAESKey) },
-                 { ServerPacket.AuthResult, typeof(SpAuthenticationResult) }
+                 { ServerPacket.AuthResult, typeof(SpAuthenticationResult) },
+                 { ServerPacket.CompilationResult, typeof(SpCompilationResult) }
             };
 
             SendPacket = new Dictionary<Type, ClientPacket>() {
@@ -22,7 +23,8 @@ namespace Sigman.Client.Network {
                 { typeof(CpRSAKey), ClientPacket.RSAKey },
                 { typeof(CpAESKey), ClientPacket.AESKey },
                 { typeof(CpLogin), ClientPacket.AuthLogin },
-                { typeof(CpFile), ClientPacket.File }
+                { typeof(CpFile), ClientPacket.File },
+                { typeof(CpIcon), ClientPacket.Icon }
             };
         }
 

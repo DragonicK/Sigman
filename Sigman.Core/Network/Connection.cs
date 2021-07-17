@@ -6,7 +6,7 @@ using Sigman.Core.Cryptography.Aes;
 
 namespace Sigman.Core.Network {
     public sealed class Connection {
-        public Action<int, string> OnDisconnect { get; set; }
+        public Action<int, string, string> OnDisconnect { get; set; }
         public bool Authenticated { get; set; }
         public bool Connected { get; set; }
         public int ConnectedTime { get; private set; }
@@ -142,7 +142,7 @@ namespace Sigman.Core.Network {
         public void Disconnect() {
             Connected = false;
             client.Close();
-            OnDisconnect?.Invoke(Index, IpAddress.Ip);
+            OnDisconnect?.Invoke(Index, IpAddress.Ip, UniqueKey);
         }
     }
 }

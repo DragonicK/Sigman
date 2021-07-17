@@ -18,6 +18,8 @@ namespace Sigman.Client.Communication {
 
         public static bool Running = false;
 
+        public static bool Authenticated { get; set; } 
+
         public static void Initialize() {
             OperationCode.Initialize();
 

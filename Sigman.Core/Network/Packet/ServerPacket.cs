@@ -3,6 +3,8 @@
         RSAKey,
         AESKey,
         Ping,
-        AuthResult
+        AuthResult,
+        CompilationResult,
+        OutputFile
     }
 }

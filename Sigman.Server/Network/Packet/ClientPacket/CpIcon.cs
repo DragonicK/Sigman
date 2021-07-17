@@ -4,7 +4,10 @@ using Sigman.Server.Server;
 using Sigman.Server.Communication;
 
 namespace Sigman.Server.Network.Packet {
-    public class CpFile : IRecvPacket {
+    public class CpIcon : IRecvPacket {
+
+        private const string IconName = "icon.ico";
+
         public void Process(byte[] buffer, Connection connection) {
             var key = connection.AesKey.GetClientKey();
             var iv = connection.AesKey.GetClientIv();
@@ -26,20 +29,14 @@ namespace Sigman.Server.Network.Packet {
 
                 FileDownload handler;
 
-                if (Authentication.FileDownloader.ContainsKey(connection.UniqueKey)) {
-                    handler = Authentication.FileDownloader[connection.UniqueKey];
-
-                    if (handler.FileName != fileName) {
-                        handler.SetFileData(connection.UniqueKey, fileName, fileLength);
-                        handler.Close();
-                        handler.Reset();
-                    }
+                if (Authentication.IconDownloader.ContainsKey(connection.UniqueKey)) {
+                    handler = Authentication.IconDownloader[connection.UniqueKey];
                 }
                 else {
                     handler = new FileDownload();
-                    handler.SetFileData(connection.UniqueKey, fileName, fileLength);
+                    handler.SetFileData(connection.UniqueKey, IconName, fileLength);
 
-                    Authentication.AddDownloadHandler(connection.UniqueKey, handler);
+                    Authentication.AddIconDownloadHandler(connection.UniqueKey, handler);
                 }
 
                 if (!handler.Completed) {

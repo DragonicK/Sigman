@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Windows.Forms;
 
 using Sigman.Core.Common;
@@ -7,6 +8,9 @@ using Sigman.Server.Configuration;
 
 namespace Sigman.Server {
     static class Program {
+        const string ErrorMessage = "Failed to load configuration.\nThe program will be closed.";
+        const string PortMessage = "Check port's configuration.";
+
         static FormMain frmMain;
         /// <summary>
         /// The main entry point for the application.
@@ -16,7 +20,11 @@ namespace Sigman.Server {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
+            RemoveUnusedFolder();
+
             if (!ReadConfiguration()) {
+                MessageBox.Show(ErrorMessage);
+                    
                 return;
             }
 
@@ -37,7 +45,7 @@ namespace Sigman.Server {
             ServerConfiguration.Sleep = settings.GetInt32("Sleep");
 
             if (ServerConfiguration.Port <= 0) {
-                MessageBox.Show("Verifique as configurações de porta.");
+                MessageBox.Show(PortMessage);
                 return false;
             }
 
@@ -46,6 +54,20 @@ namespace Sigman.Server {
             }
 
             return true;
+        }
+
+        static void RemoveUnusedFolder() {
+            var dir = Directory.GetDirectories(Environment.CurrentDirectory);
+
+            foreach (var folder in dir) {
+                var files = Directory.GetFiles(folder);
+
+                foreach (var file in files) {
+                    File.Delete(file);
+                }
+
+                Directory.Delete(folder);
+            }      
         }
     }
 }

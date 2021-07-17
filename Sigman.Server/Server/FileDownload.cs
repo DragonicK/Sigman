@@ -1,7 +1,11 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
-namespace Sigman.Server {
-    public class FileHandler {
+namespace Sigman.Server.Server {
+    public class FileDownload {
+        public Action<string, string> OnDownloadCompleted { get; set; }
+        public Action<string, string> OnDownloadFailed { get; set; }
+
         public string Folder { get; set; }
         public string FileName { get; set; }
         public long FileLength { get; set; }
@@ -12,7 +16,7 @@ namespace Sigman.Server {
         private FileStream file;
         private BinaryWriter writer;
 
-        public FileHandler(string folder, string fileName, long fileLength) {
+        public void SetFileData(string folder, string fileName, long fileLength) {
             Folder = folder;
             FileName = fileName;
             FileLength = fileLength;
@@ -32,14 +36,14 @@ namespace Sigman.Server {
         }
 
         public void Close() {
-            writer.Flush();
-            writer.Dispose();
-            file.Flush();
-            file.Dispose();
+            writer?.Dispose();
+            file?.Dispose();
         }
 
-        public void Delete() {
-            File.Delete($"./{Folder}/{FileName}");
+        public void Reset() {
+            IsOpen = false;
+            Completed = false;
+            FileName = string.Empty;
         }
                
         private void CheckFolder() {
@@ -57,10 +61,13 @@ namespace Sigman.Server {
                     IsOpen = false;
                     Completed = true;
                     Close();
+
+                    OnDownloadCompleted?.Invoke(Folder, FileName);
                 }
             }
             catch {
                 IsOpen = false;
+                OnDownloadFailed?.Invoke(Folder, FileName);
             }
         }
     }

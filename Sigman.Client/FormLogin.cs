@@ -2,6 +2,7 @@
 using System.Windows.Forms;
 using System.Drawing;
 using Sigman.Client.Controller;
+using Sigman.Client.Communication;
 
 namespace Sigman.Client {
     public partial class FormLogin : Form {
@@ -62,6 +63,10 @@ namespace Sigman.Client {
             }
             
             e.Cancel = false;
+
+            if (!Global.Authenticated) {
+                Application.Exit();
+            }
         }
 
         private void FormLogin_Load(object sender, EventArgs e) {

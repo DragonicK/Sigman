@@ -17,12 +17,26 @@ namespace Sigman.Client {
         private long FileLength { get; set; }
         private string FileName { get; set; } = string.Empty;
         private string InputFile { get; set; } = string.Empty;
+        private string IconName { get; set; } = string.Empty;
+        private string IconFile { get; set; } = string.Empty;
         private string OutputFolder { get; set; } = string.Empty;
+
+        private delegate void ShowFailed(string message);
 
         public FormMain(IClientTcp socket, IPacket packet) {
             InitializeComponent();
             Socket = socket;
             Packet = packet;
+        }
+
+        public void ShowFailedMessage(string message) {
+            if (InvokeRequired) {
+                var d = new ShowFailed(ShowFailedMessage);
+                Invoke(d, message);
+            }
+            else {
+                MessageBox.Show(message, "Error");
+            }
         }
 
         private void ButtonFile_Click(object sender, EventArgs e) {
@@ -69,6 +83,10 @@ namespace Sigman.Client {
 
             TextInputFile.Enabled = false;
             ButtonFile.Enabled = false;
+
+            TextInputIcon.Enabled = false;
+            ButtonIcon.Enabled = false;
+
             TextOutputFolder.Enabled = false;
             ButtonFolder.Enabled = false;
 
@@ -125,6 +143,29 @@ namespace Sigman.Client {
         private void StartProcess() {
             BytesReadCount = 0;
 
+            // if we selected some icon.
+            if (IconName.Length > 0 && File.Exists(IconFile)) {
+                using (var f = new FileStream(IconFile, FileMode.Open, FileAccess.Read)) {
+                    using (var r = new BinaryReader(f)) {
+
+                        var bytesCount = 0;
+                        var fLength = f.Length;
+
+                        while (Started) {
+                            var buffer = r.ReadBytes(ChunckSize);
+
+                            bytesCount += buffer.Length;
+
+                            Packet.SendIcon(IconName, fLength, buffer);
+
+                            if (bytesCount >= fLength) {
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
             using (var f = new FileStream(InputFile, FileMode.Open, FileAccess.Read)) {
                 using (var r = new BinaryReader(f)) {
 
@@ -158,6 +199,24 @@ namespace Sigman.Client {
             }
             else {
                 ProgressSend.Value = progress;
+            }
+        }
+
+        private void ButtonIcon_Click(object sender, EventArgs e) {
+            var dialog = new OpenFileDialog() {
+                Multiselect = false,
+                CheckFileExists = true,
+                Filter = "Icon Files | *.ico",
+                InitialDirectory = Environment.CurrentDirectory
+            };
+
+            var result = dialog.ShowDialog();
+
+            if (result == DialogResult.OK) {
+                IconName = dialog.SafeFileName;
+                IconFile = dialog.FileName;
+
+                TextInputIcon.Text = IconFile;
             }
         }
     }
