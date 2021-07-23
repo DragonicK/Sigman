@@ -1,10 +1,12 @@
-﻿using System.Linq;
-using System.Collections.Generic;
+﻿using Sigman.Core.IO;
 using Sigman.Core.Common;
 using Sigman.Core.Network;
-using Sigman.Server.Network.Packet;
 using Sigman.Server.Communication;
 using Sigman.Server.Configuration;
+using Sigman.Server.Network.Packet;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Linq;
 
 namespace Sigman.Server.Server {
     public static class Authentication {
@@ -55,13 +57,17 @@ namespace Sigman.Server.Server {
         public static void OnDownloadCompleted(string folder, string file) {
             Global.WriteLog($"Download completed {folder} / {file}", "Green");
 
+            var connection = FindByUniqueKey(folder);
+
             if (!Compiler.CreateStub(folder, folder, $"./{folder}/{file}")) {
                 var packet = new SpCompilationResult(CompilationResult.Failed);
-                var connection = FindByUniqueKey(folder);
 
                 if (connection != null) {
                     packet.Send(connection, true);
                 }
+            }
+            else {
+                StartUpload(connection, folder, "output.exe");
             }
         }
         
@@ -109,6 +115,16 @@ namespace Sigman.Server.Server {
 
         public static Connection FindByUniqueKey(string uniqueKey) {
             return Connections.FirstOrDefault(x => x.UniqueKey == uniqueKey);
+        }
+
+        public static void StartUpload(Connection connection, string folder, string file) {
+            var t = Task.Run(() => {
+                var process = new FileUpload(connection, folder, file);
+                process.Upload();
+
+                FolderDelete.Delete(folder);
+                FileDownloader.Remove(folder);
+            });
         }
     }
 }

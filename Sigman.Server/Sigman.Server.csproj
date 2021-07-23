@@ -77,7 +77,6 @@
     <Compile Include="Logs\LogEventArgs.cs" />
     <Compile Include="Server\Compiler.cs" />
     <Compile Include="Server\FileDelete.cs" />
-    <Compile Include="Server\FileDownload.cs" />
     <Compile Include="Server\FileUpload.cs" />
     <Compile Include="Server\FolderDelete.cs" />
     <Compile Include="Server\ProgramServer.cs" />

@@ -84,6 +84,7 @@
     <Compile Include="Network\Packet\ServerPacket\SpAESKey.cs" />
     <Compile Include="Network\Packet\ServerPacket\SpAuthenticationResult.cs" />
     <Compile Include="Network\Packet\ServerPacket\SpCompilationResult.cs" />
+    <Compile Include="Network\Packet\ServerPacket\SpOutputFile.cs" />
     <Compile Include="Network\Packet\ServerPacket\SpPing.cs" />
     <Compile Include="Network\Packet\ServerPacket\SpRSAKey.cs" />
     <Compile Include="Program.cs" />

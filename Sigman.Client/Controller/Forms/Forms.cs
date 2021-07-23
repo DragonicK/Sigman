@@ -27,5 +27,9 @@ namespace Sigman.Client.Controller {
         public void ShowFailedMessage(string message) {
             Main.ShowFailedMessage(message);
         }
+
+        public void StopProcess() {
+            Main.StopProcess();      
+        }
     }
 }

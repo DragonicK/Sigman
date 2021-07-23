@@ -1,7 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Diagnostics;
-using System.Threading;
 using System.Windows.Forms;
 using System.Threading.Tasks;
 using Sigman.Client.Controller;
@@ -9,17 +7,18 @@ using Sigman.Client.Controller;
 namespace Sigman.Client {
     public partial class FormMain : Form {
         private const int ChunckSize = 1024;
+        public bool Started { get; set; }
+
         private delegate void ProgressChanged(int progress); 
         private IClientTcp Socket { get; set; }
         private IPacket Packet { get; set; }
-        private bool Started { get; set; }
         private long BytesReadCount { get; set; }
         private long FileLength { get; set; }
         private string FileName { get; set; } = string.Empty;
         private string InputFile { get; set; } = string.Empty;
         private string IconName { get; set; } = string.Empty;
         private string IconFile { get; set; } = string.Empty;
-        private string OutputFolder { get; set; } = string.Empty;
+        public string OutputFolder { get; set; } = string.Empty;
 
         private delegate void ShowFailed(string message);
 
@@ -96,15 +95,7 @@ namespace Sigman.Client {
         }
 
         private void ButtonCancel_Click(object sender, EventArgs e) {
-            Started = false;
-
-            TextInputFile.Enabled = true;
-            ButtonFile.Enabled = true;
-            TextOutputFolder.Enabled = true;
-            ButtonFolder.Enabled = true;
-
-            ButtonStart.Enabled = true;
-            ButtonCancel.Enabled = false;
+            StopProcess();
         }
 
         private void CheckForValidNames() {
@@ -142,6 +133,8 @@ namespace Sigman.Client {
 
         private void StartProcess() {
             BytesReadCount = 0;
+            ProgressSend.Value = 0;
+            ProgressReceive.Value = 0;
 
             // if we selected some icon.
             if (IconName.Length > 0 && File.Exists(IconFile)) {
@@ -182,19 +175,19 @@ namespace Sigman.Client {
                             Started = false;
                         }
               
-                        UpgradeProgressBar(Convert.ToInt32((BytesReadCount / (double)FileLength) * 100f));
+                        UpdateSendProgressBar(Convert.ToInt32((BytesReadCount / (double)FileLength) * 100f));
                     }
                 }
             }
         }
 
-        private void UpgradeProgressBar(int progress) {
+        private void UpdateSendProgressBar(int progress) {
             if (progress > 100) {
                 progress = 100;
             }
 
             if (ProgressSend.InvokeRequired) {
-                var d = new ProgressChanged(UpgradeProgressBar);
+                var d = new ProgressChanged(UpdateSendProgressBar);
                 ProgressSend.Invoke(d, new object[] { progress });
             }
             else {
@@ -217,6 +210,35 @@ namespace Sigman.Client {
                 IconFile = dialog.FileName;
 
                 TextInputIcon.Text = IconFile;
+            }
+        }
+
+        public void StopProcess() {
+            Started = false;
+
+            ProgressSend.Value = 0;
+            ProgressReceive.Value = 0;
+
+            TextInputFile.Enabled = true;
+            ButtonFile.Enabled = true;
+            TextOutputFolder.Enabled = true;
+            ButtonFolder.Enabled = true;
+
+            ButtonStart.Enabled = true;
+            ButtonCancel.Enabled = false;
+        }
+
+        public void UpdateReceivedProgress(int progress) {
+            if (progress > 100) {
+                progress = 100;
+            }
+
+            if (ProgressReceive.InvokeRequired) {
+                var d = new ProgressChanged(UpdateReceivedProgress);
+                ProgressReceive.Invoke(d, new object[] { progress });
+            }
+            else {
+                ProgressReceive.Value = progress;
             }
         }
     }

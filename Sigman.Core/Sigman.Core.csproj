@@ -53,6 +53,7 @@
     <Compile Include="Cryptography\KeyGenerator.cs" />
     <Compile Include="Cryptography\RSA\RSACryptography.cs" />
     <Compile Include="Cryptography\RSA\RSAKey.cs" />
+    <Compile Include="IO\FileDownload.cs" />
     <Compile Include="Network\Abstract\SendPacket.cs" />
     <Compile Include="Network\ByteBuffer.cs" />
     <Compile Include="Network\Connection.cs" />

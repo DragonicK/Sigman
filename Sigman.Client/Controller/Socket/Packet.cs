@@ -2,7 +2,7 @@
 using Sigman.Client.Communication;
 using Sigman.Client.Network.Packet;
 
-namespace Sigman.Client.Controller.Socket {
+namespace Sigman.Client.Controller {
     public class Packet : IPacket {
         public void SendFile(string fileName, long fileLength, byte[] buffer) {
             var file = new CpFile(fileName, fileLength, buffer);

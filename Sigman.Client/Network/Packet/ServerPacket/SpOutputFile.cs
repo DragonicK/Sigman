@@ -1,11 +1,9 @@
-﻿using Sigman.Core.Common;
-using Sigman.Core.Network;
+﻿using Sigman.Core.Network;
 using Sigman.Core.Cryptography.Aes;
 using Sigman.Client.Communication;
 
 namespace Sigman.Client.Network.Packet {
-    public class SpCompilationResult : IRecvPacket {
-
+    public class SpOutputFile : IRecvPacket {
         public void Process(byte[] buffer, Connection connection) {
             var key = connection.AesKey.GetClientKey();
             var iv = connection.AesKey.GetClientIv();
@@ -20,22 +18,28 @@ namespace Sigman.Client.Network.Packet {
 
             if (sucess) {
                 var msg = new ByteBuffer(decrypted);
-                var result = (CompilationResult)msg.ReadInt32();
+                var fileName = msg.ReadString();
+                var fileLength = msg.ReadInt64();
+                var length = msg.ReadInt32();
+                var bytes = msg.ReadBytes(length);
 
-                if (result == CompilationResult.Failed) {
-                    StopProcess();
-                    Global.Forms.ShowFailedMessage("Stub compilation failed");
+                var handler = Global.Downloader;
+
+                if (handler.FileName == string.Empty) {
+                    handler.SetFileData(Global.OutputFolder, fileName, fileLength);
                 }
-                else if (result == CompilationResult.DownloadFailed) {
-                    StopProcess();
-                    Global.Forms.ShowFailedMessage("File upload failed");
+
+                if (!handler.Completed) {
+                    if (!handler.IsOpen) {
+                        handler.Open();
+                    }
+
+                    handler.Save(bytes);
                 }
             }
-        }
-
-        private void StopProcess() {
-            Global.Forms.StopProcess();
-            Global.StopDownload();
+            else {
+                Global.Forms.ShowFailedMessage("Failed to download compiled file!");
+            }
         }
     }
 }
